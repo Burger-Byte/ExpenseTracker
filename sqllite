@@ -1,0 +1,27 @@
+import sqlite3
+con = sqlite3.connect("expensedata.db")
+cur = con.cursor()
+
+
+cur.execute("""CREATE TABLE IF NOT EXISTS Expenses 
+            (
+            expense_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+            date TEXT, 
+            amount NUMERIC, 
+            description TEXT, 
+            category_id INTEGER,
+            FOREIGN KEY (category_id) REFERENCES Categories(category_id)
+            )
+            """)
+cur.execute("""CREATE TABLE IF NOT EXISTS Categories 
+            (
+            category_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+            name TEXT
+            )
+            """)
+
+cur.execute("INSERT INTO Categories (name) VALUES ('Health')")
+cur.execute("INSERT INTO Expenses (date, amount, description, category_id) VALUES ('31 Mar 24', '500','Medical Aid', 5)")
+
+con.commit()
+con.close()
