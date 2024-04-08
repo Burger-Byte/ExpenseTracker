@@ -1,4 +1,6 @@
 import sqlite3
+import matplotlib.pyplot as plt
+
 # Connect to the SQLite database
 con = sqlite3.connect("expensedata.db")
 # Create a cursor object
@@ -125,6 +127,56 @@ def delete_all_categories(expense_id):
     finally:
         if conn:
             conn.close()
+
+def generate_pie_chart():
+    # Get expenses by category
+    expenses_by_category = calculate_expenses_by_category()
+
+    # Calculate total expenses
+    total_expenses = sum(expenses_by_category.values())
+
+    # Get income
+    income = get_income()
+
+    # Calculate remaining budget (income - expenses)
+    remaining_budget = income - total_expenses
+
+    # Data for the pie chart
+    labels = expenses_by_category.keys()
+    sizes = expenses_by_category.values()
+    explode = [0.1] * len(labels)  # Explode all slices for better visualization
+
+    # Add a category for remaining budget if it's positive
+    if remaining_budget > 0:
+        labels += ['Remaining Budget']
+        sizes += [remaining_budget]
+        explode += [0.1]
+
+    # Plot the pie chart
+    plt.figure(figsize=(8, 8))
+    plt.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%', startangle=140)
+    plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle
+    plt.title('Expenses by Category')
+
+    # Show the pie chart
+    plt.show()
+
+def calculate_expenses_by_category():
+    # Connect to the database and query expenses by category
+    expenses_by_category = {}  # Dictionary to store expenses by category
+    # Execute SQL query to retrieve expenses by category
+    # For example:
+    # SELECT category_id, SUM(amount) FROM Expenses GROUP BY category_id
+    # Iterate through the results and populate the expenses_by_category dictionary
+    return expenses_by_category
+
+def get_income():
+    # Connect to the database and retrieve income from the appropriate table or source
+    # Execute SQL query or call a function to get the income
+    # For example:
+    # SELECT income FROM IncomeTable
+    return income
+
 
 
 # Commit changes
