@@ -1,0 +1,32 @@
+#:kivy 2.0
+#:import ScreenManager kivy.uix.screenmanager.ScreenManager
+#:import Screen kivy.uix.screenmanager.Screen
+
+<MainScreen>:
+    BoxLayout:
+        Button:
+            text: 'Go to Add Expense Screen'
+            on_press: root.manager.current = 'add_expense'
+
+<AddExpenseScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        TextInput:
+            id: date_input
+            hint_text: 'Date (YYYY-MM-DD)'
+        TextInput:
+            id: amount_input
+            hint_text: 'Amount'
+        TextInput:
+            id: category_input
+            hint_text: 'Category'
+        TextInput:
+            id: description_input
+            hint_text: 'Description'
+        Button:
+            text: 'Save Expense'
+            on_press: root.save_expense()
+        Button:
+            text: 'Back to Main Screen'
+            on_press: root.manager.current = 'main'
+
