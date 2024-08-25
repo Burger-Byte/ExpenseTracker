@@ -26,3 +26,19 @@ def add_expense(date, amount, category, description):
     ''', (date, amount, category, description))
     conn.commit()
     conn.close()
+
+
+def get_expenses():
+    try:
+        conn = sqlite3.connect('data/expenses.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM expenses ORDER BY date DESC')
+        expenses = cursor.fetchall()
+        conn.close()
+        return expenses
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return []
+    except Exception as e:
+        print(f"General error: {e}")
+        return []

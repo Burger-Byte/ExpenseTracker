@@ -2,11 +2,40 @@
 #:import ScreenManager kivy.uix.screenmanager.ScreenManager
 #:import Screen kivy.uix.screenmanager.Screen
 
+
 <MainScreen>:
     BoxLayout:
-        Button:
-            text: 'Go to Add Expense Screen'
-            on_press: root.manager.current = 'add_expense'
+        orientation: 'vertical'
+        padding: 10
+        spacing: 10
+
+        Label:
+            id: total_label
+            text: 'Total Expenses: $0.00'
+            font_size: '20sp'
+            size_hint_y: None
+            height: 50
+
+        ScrollView:
+            size_hint: (1, None)
+            size: (root.width, 400)
+            GridLayout:
+                id: expense_list
+                cols: 1
+                spacing: 10
+                size_hint_y: None
+                height: self.minimum_height
+
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            Button:
+                text: 'Add Expense'
+                on_press: root.manager.current = 'add_expense'
+            Button:
+                text: 'View Reports'
+                on_press: root.manager.current = 'view_reports'
+
 
 <AddExpenseScreen>:
     BoxLayout:
