@@ -1,0 +1,2 @@
+kivy
+sqlite3
