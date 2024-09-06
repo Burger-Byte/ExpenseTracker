@@ -18,14 +18,19 @@ def setup_database():
     conn.close()
 
 def add_expense(date, amount, category, description):
+    # Connect to the database
     conn = sqlite3.connect('data/expenses.db')
     cursor = conn.cursor()
-    cursor.execute('''
-        INSERT INTO expenses (date, amount, category, description)
-        VALUES (?, ?, ?, ?)
-    ''', (date, amount, category, description))
+
+    # Add the expense to the database
+    cursor.execute('INSERT INTO expenses (date, amount, category, description) VALUES (?, ?, ?, ?)',
+                   (date, amount, category, description))
+    
+    # Commit the transaction and close the connection
     conn.commit()
     conn.close()
+
+    print(f"Expense added: {date}, {amount}, {category}, {description}")
 
 
 def get_expenses():
