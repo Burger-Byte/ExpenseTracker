@@ -2,30 +2,21 @@
 <AddExpenseScreen>:
     BoxLayout:
         orientation: 'vertical'
-        padding: 10
-        spacing: 10
-
         TextInput:
             id: date_input
             hint_text: 'Date (YYYY-MM-DD)'
-        
         TextInput:
             id: amount_input
             hint_text: 'Amount'
-        
-        Spinner:
-            id: category_spinner
-            text: 'Select Category'
-            values: ['Groceries', 'Transportation', 'Entertainment']  # Example categories
-        
+        TextInput:
+            id: category_input
+            hint_text: 'Category'
         TextInput:
             id: description_input
             hint_text: 'Description'
-        
         Button:
-            text: 'Add Expense'
-            on_press: root.add_expense(date_input.text, amount_input.text, category_spinner.text, description_input.text)
-        
+            text: 'Save Expense'
+            on_press: root.save_expense()
         Button:
-            text: 'Back to Main Menu'
-            on_press: app.root.current = 'main'
+            text: 'Back to Main Screen'
+            on_press: root.manager.current = 'main'
