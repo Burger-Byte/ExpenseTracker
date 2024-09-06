@@ -2,21 +2,40 @@
 <AddExpenseScreen>:
     BoxLayout:
         orientation: 'vertical'
-        TextInput:
-            id: date_input
-            hint_text: 'Date (YYYY-MM-DD)'
-        TextInput:
+        padding: dp(20)
+        spacing: dp(10)
+
+        MDTextField:
             id: amount_input
             hint_text: 'Amount'
-        TextInput:
+            mode: "rectangle"
+            input_filter: 'float'
+            required: True
+
+        MDTextField:
             id: category_input
             hint_text: 'Category'
-        TextInput:
+            mode: "rectangle"
+            required: True
+
+        MDTextField:
             id: description_input
             hint_text: 'Description'
-        Button:
+            mode: "rectangle"
+
+        MDRaisedButton:
+            text: 'Select Date'
+            on_press: root.show_date_picker()
+
+        MDLabel:
+            id: date_label  # Make sure this id is defined properly
+            text: 'Selected Date: None'
+            halign: 'center'
+
+        MDRaisedButton:
             text: 'Save Expense'
             on_press: root.save_expense()
-        Button:
+
+        MDRaisedButton:
             text: 'Back to Main Screen'
             on_press: root.go_back_to_main()

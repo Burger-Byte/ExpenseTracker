@@ -5,17 +5,18 @@
         padding: 10
         spacing: 10
 
-        Label:
+        MDLabel:  # Use MDLabel from KivyMD
             id: total_label
             text: "Total Expenses: $0.00"
-            font_size: '20sp'
+            font_style: 'H5'  # Material design font style
+            halign: 'center'  # Center the label
             size_hint_y: None
             height: 50
 
         ScrollView:
             size_hint: (1, None)
             size: (root.width, 400)
-            GridLayout:
+            MDGridLayout:  # Use MDGridLayout for better styling
                 id: scroll_layout
                 cols: 1
                 spacing: 10
@@ -25,9 +26,15 @@
         BoxLayout:
             size_hint_y: None
             height: 50
-            Button:
+            MDRaisedButton:  # Use Material Design buttons
                 text: 'Add Expense'
                 on_press: root.go_to_add_expense()
-            Button:
+            MDRaisedButton:
                 text: 'View Reports'
                 on_press: root.go_to_view_reports()
+            MDRaisedButton:
+                text: 'Set Budget'
+                on_press: root.go_to_set_budget()
+            MDRaisedButton:
+                text: 'Manage Categories'
+                on_press: root.go_to_manage_categories()
