@@ -1,3 +1,6 @@
+
+import kivy
+
 from kivy.app import App
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.uix.label import Label
@@ -86,6 +89,7 @@ class SimpleApp(App):
         sm = ScreenManager()
         sm.add_widget(MainScreen(name='main'))
         sm.add_widget(AddExpenseScreen(name='add_expense'))
+        sm.add_widget(AddExpenseScreen(name='view_reports'))
         sm.current = 'main'
         return sm
 
