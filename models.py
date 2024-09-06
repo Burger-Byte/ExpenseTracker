@@ -82,7 +82,27 @@ def get_expense_reports():
     except Exception as e:
         print(f"General error: {e}")
         return []
-    
+
+def get_budgets():
+    try:
+        conn = sqlite3.connect('data/expenses.db')
+        cursor = conn.cursor()
+
+        # Retrieve all budget data from the budgets table
+        cursor.execute('SELECT category, amount FROM budgets')
+        budgets = cursor.fetchall()
+
+        conn.close()
+        return budgets
+
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+        return []
+    except Exception as e:
+        print(f"General error: {e}")
+        return []
+
+
 def set_budget(category, amount):
     try:
         conn = sqlite3.connect('data/expenses.db')
