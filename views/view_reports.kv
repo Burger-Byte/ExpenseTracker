@@ -1,1 +1,26 @@
 #:kivy 2.0
+<ViewReportsScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(20)
+        spacing: dp(10)
+
+        MDLabel:
+            text: "Expense Reports"
+            font_style: "H4"
+            halign: "center"
+            size_hint_y: None
+            height: self.texture_size[1]
+
+        ScrollView:
+            MDGridLayout:
+                id: reports_list
+                cols: 1
+                adaptive_height: True  # Automatically resize based on content
+                padding: dp(10)
+                spacing: dp(10)
+
+        MDRaisedButton:
+            text: 'Back to Main Screen'
+            pos_hint: {'center_x': 0.5}
+            on_press: root.go_back_to_main()
