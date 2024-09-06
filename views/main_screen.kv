@@ -2,39 +2,14 @@
 <MainScreen>:
     BoxLayout:
         orientation: 'vertical'
-        padding: 10
-        spacing: 10
+        padding: dp(10)
+        spacing: dp(10)
 
-        MDLabel:  # Use MDLabel from KivyMD
-            id: total_label
-            text: "Total Expenses: $0.00"
-            font_style: 'H5'  # Material design font style
-            halign: 'center'  # Center the label
-            size_hint_y: None
-            height: 50
-
-        ScrollView:
-            size_hint: (1, None)
-            size: (root.width, 400)
-            MDGridLayout:  # Use MDGridLayout for better styling
-                id: scroll_layout
-                cols: 1
-                spacing: 10
-                size_hint_y: None
-                height: self.minimum_height
-
+        # Graph Layout, reserve space for graphs only
         BoxLayout:
-            size_hint_y: None
-            height: 50
-            MDRaisedButton:  # Use Material Design buttons
-                text: 'Add Expense'
-                on_press: root.go_to_add_expense()
-            MDRaisedButton:
-                text: 'View Reports'
-                on_press: root.go_to_view_reports()
-            MDRaisedButton:
-                text: 'Set Budget'
-                on_press: root.go_to_set_budget()
-            MDRaisedButton:
-                text: 'Manage Categories'
-                on_press: root.go_to_manage_categories()
+            id: graph_layout
+            orientation: 'vertical'
+            size_hint_y: 0.6  # 60% for graphs
+
+        # Buttons will be added dynamically in Python, so no buttons here
+
