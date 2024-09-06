@@ -7,12 +7,7 @@ from kivy.uix.screenmanager import Screen
 
 class ViewReportsScreen(Screen):
     def __init__(self, **kwargs):
-        super(ViewReportsScreen, self).__init__(**kwargs)
         logging.info("ViewReportsScreen initialized")  # Log initialization
-
-
-class ViewReportsScreen(Screen):
-    def __init__(self, **kwargs):
         super(ViewReportsScreen, self).__init__(**kwargs)
         layout = BoxLayout(orientation='vertical')
         layout.add_widget(Label(text='View Reports Screen'))
