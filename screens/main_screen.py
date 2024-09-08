@@ -1,170 +1,127 @@
 import os
 import logging
-from kivy.uix.screenmanager import Screen
-from kivymd.uix.label import MDLabel
-from kivymd.app import MDApp
-import matplotlib.pyplot as plt
-from models import get_expenses, get_budgets
 from kivy_garden.matplotlib import FigureCanvasKivyAgg
-from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button import MDRaisedButton
 from kivy.uix.boxlayout import BoxLayout
-from kivy.metrics import dp
+import matplotlib.pyplot as plt
+from screens.base_screen import BaseScreen
+from models import get_expenses, get_budgets
+from kivymd.app import MDApp
 
-# Configure the logger to flush immediately and capture all levels
-logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(message)s')
 
-class MainScreen(Screen):
+class MainScreen(BaseScreen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
+        self.graphs_dir = os.path.join(os.getcwd(), 'graphs')
+        if not os.path.exists(self.graphs_dir):
+            os.makedirs(self.graphs_dir)
 
-        # Create a vertical layout
-        layout = BoxLayout(orientation='vertical', padding=dp(10), spacing=dp(10))
+        self.setup_graphs()
 
-        # Create a BoxLayout for graphs
-        graph_layout = BoxLayout(orientation='vertical', size_hint_y=0.6)  # 60% of screen height for graphs
+    def setup_graphs(self):
+        """Set up the graphs (expense and budget) using matplotlib with transparency and dynamic colors."""
+        graph_layout = self.ids.graph_layout
 
-        # Add the expense graph
+        # Expense graph setup
         self.expense_figure, self.expense_ax = plt.subplots(figsize=(6, 4))
         self.expense_canvas = FigureCanvasKivyAgg(self.expense_figure)
         graph_layout.add_widget(self.expense_canvas)
 
-        # Add the budget graph
+        # Budget graph setup
         self.budget_figure, self.budget_ax = plt.subplots(figsize=(6, 4))
         self.budget_canvas = FigureCanvasKivyAgg(self.budget_figure)
         graph_layout.add_widget(self.budget_canvas)
 
-        layout.add_widget(graph_layout)
-
-        # Create a BoxLayout for the buttons
-        button_layout = BoxLayout(size_hint_y=0.2, spacing=dp(10))  # 20% of screen height for buttons
-
-        # Add buttons for navigation
-        add_expense_button = MDRaisedButton(text="Add Expense", on_press=self.go_to_add_expense)
-        view_reports_button = MDRaisedButton(text="View Reports", on_press=self.go_to_view_reports)
-        set_budget_button = MDRaisedButton(text="Set Budget", on_press=self.go_to_set_budget)
-        manage_categories_button = MDRaisedButton(text="Manage Categories", on_press=self.go_to_manage_categories)
-
-        button_layout.add_widget(add_expense_button)
-        button_layout.add_widget(view_reports_button)
-        button_layout.add_widget(set_budget_button)
-        button_layout.add_widget(manage_categories_button)
-
-        layout.add_widget(button_layout)
-
-        self.add_widget(layout)
-
-        # Call methods to update graphs
+        # Generate the graphs
         self.generate_expense_graph()
         self.generate_budget_graph()
 
-
     def generate_expense_graph(self):
-        try:
-            # Fetch expenses from your database
-            expenses = get_expenses()
+        """Generate a pie chart for expenses with dynamic color and transparent background."""
+        expenses = get_expenses()
+        category_totals = {}
 
-            # Prepare data for the graph
-            expense_by_category = {}
-            for expense in expenses:
-                category = expense[3]
-                amount = float(expense[2])
-                expense_by_category[category] = expense_by_category.get(category, 0) + amount
+        # Aggregate expenses by category
+        for expense in expenses:
+            category = expense[3]
+            amount = float(expense[2])
+            if category in category_totals:
+                category_totals[category] += amount
+            else:
+                category_totals[category] = amount
 
-            categories = list(expense_by_category.keys())
-            amounts = list(expense_by_category.values())
+        categories = list(category_totals.keys())
+        amounts = list(category_totals.values())
 
-            # Ensure the figure and axis background is transparent
-            self.expense_figure.patch.set_alpha(0)  # Transparent figure background
-            self.expense_ax.set_facecolor('none')  # Transparent axes background
+        # Clear the previous graph
+        self.expense_ax.clear()
 
-            # Clear previous chart and plot the pie chart
-            self.expense_ax.clear()
+        # Set figure and axes to be transparent
+        self.expense_figure.patch.set_alpha(0)  # Make figure background transparent
+        self.expense_ax.set_facecolor('none')   # Make axis background transparent
 
-            # Determine text color based on the theme
-            app = MDApp.get_running_app()
-            text_color = "white" if app.theme_cls.theme_style == "Dark" else "black"
+        # Determine if the theme is light or dark
+        app = MDApp.get_running_app()
+        text_color = "white" if app.theme_cls.theme_style == "Dark" else "black"
 
-            # Plot the pie chart with expense data
-            wedges, texts, autotexts = self.expense_ax.pie(amounts, labels=categories, autopct='%1.1f%%')
-
-            # Set the text color for labels and percentages in the pie chart
-            for text in texts:
-                text.set_color(text_color)
-            for autotext in autotexts:
-                autotext.set_color(text_color)
-
-            # Redraw the canvas
-            self.expense_canvas.draw()
-
-        except Exception as e:
-            logging.error(f"Error generating expense graph: {e}")
+        # Create the pie chart
+        self.expense_ax.pie(amounts, labels=categories, autopct='%1.1f%%', textprops={'color': text_color})
+        self.expense_canvas.draw()
 
     def generate_budget_graph(self):
-        try:
-            # Fetch budgets from your database
-            budgets = get_budgets()
+        """Generate a stacked bar chart comparing budgets and expenses with dynamic colors."""
+        budgets = get_budgets()
+        expenses = get_expenses()
 
-            categories = [budget[0] for budget in budgets]
-            amounts = [float(budget[1]) for budget in budgets]
+        # Aggregate expenses by category
+        expense_by_category = {}
+        for expense in expenses:
+            category = expense[3]
+            amount = float(expense[2])
+            if category in expense_by_category:
+                expense_by_category[category] += amount
+            else:
+                expense_by_category[category] = amount
 
-            # Clear previous chart and plot the bar chart
-            self.budget_ax.clear()
+        categories = [budget[0] for budget in budgets]
+        budget_amounts = [float(budget[1]) for budget in budgets]
+        expense_amounts = [expense_by_category.get(category, 0) for category in categories]
 
-            # Ensure the figure and axis background is transparent
-            self.budget_figure.patch.set_alpha(0)  # Transparent figure background
-            self.budget_ax.set_facecolor('none')  # Transparent axes background
+        # Clear the previous graph
+        self.budget_ax.clear()
 
-            # Plot the bar chart
-            bars = self.budget_ax.bar(categories, amounts, color=MDApp.get_running_app().theme_cls.primary_color)
+        # Set figure and axes to be transparent
+        self.budget_figure.patch.set_alpha(0)
+        self.budget_ax.set_facecolor('none')
 
-            # Set text color based on the theme
-            app = MDApp.get_running_app()
-            text_color = "white" if app.theme_cls.theme_style == "Dark" else "black"
+        # Determine if the theme is light or dark
+        app = MDApp.get_running_app()
+        text_color = "white" if app.theme_cls.theme_style == "Dark" else "black"
 
-            # Customize chart labels and text colors
-            self.budget_ax.set_xticklabels(categories, color=text_color)
-            self.budget_ax.set_yticklabels([0, 50, 100, 150, 200], color=text_color)  # Adjust y-ticks as needed
-            self.budget_ax.set_title("Budget Overview", color=text_color)
+        # Plot the budget and expenses as stacked bars
+        bar_width = 0.5
+        budget_bars = self.budget_ax.bar(categories, budget_amounts, bar_width, label='Budget',
+                                         color=app.theme_cls.primary_color)
+        expense_bars = self.budget_ax.bar(categories, expense_amounts, bar_width, label='Expenses',
+                                          color='red', alpha=0.7)
 
-            # Add data labels on top of bars
-            for bar in bars:
-                self.budget_ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(),
-                                    f'{bar.get_height():.2f}', ha='center', color=text_color)
+        # Customize chart labels and text colors
+        self.budget_ax.set_xticklabels(categories, color=text_color, rotation=45, ha='right')
+        self.budget_ax.set_yticklabels([0, 100, 200, 300, 400, 500], color=text_color)
+        self.budget_ax.set_title("Expenses Overview", color=text_color)
 
-            # Redraw the canvas
-            self.budget_canvas.draw()
+        # Add labels on top of each bar for expenses and budget
+        for i, (budget_bar, expense_bar) in enumerate(zip(budget_bars, expense_bars)):
+            self.budget_ax.text(budget_bar.get_x() + budget_bar.get_width() / 2,
+                                budget_bar.get_height(), f'{budget_amounts[i]:.2f}', ha='center', color=text_color)
+            self.budget_ax.text(expense_bar.get_x() + expense_bar.get_width() / 2,
+                                expense_bar.get_height(), f'{expense_amounts[i]:.2f}', ha='center', color=text_color)
 
-        except Exception as e:
-            logging.error(f"Error generating budget graph: {e}")
+        # Add legend
+        self.budget_ax.legend()
 
-    def load_expenses(self):
-        logging.info("Loading all expenses in MainScreen")
-        try:
-            expenses = get_expenses()
-            self.ids.scroll_layout.clear_widgets()
+        self.budget_canvas.draw()
 
-            total = 0
-            for expense in expenses:
-                amount = float(expense[2])  # Ensure amount is a float
-                formatted_amount = f"${amount:,.2f}"  # Format as currency
-                expense_label = MDLabel(text=f"{expense[1]}: {formatted_amount} - {expense[3]}", size_hint_y=None, height=40)
-                self.ids.scroll_layout.add_widget(expense_label)
-                total += amount
-
-            self.ids.total_label.text = f'Total Expenses: ${total:,.2f}'  # Format total as currency
-        except Exception as e:
-            logging.error(f"Error loading expenses: {e}")
-
-    # Navigation methods
-    def go_to_add_expense(self, instance=None):
-        self.manager.current = 'add_expense'
-
-    def go_to_view_reports(self, instance=None):
-        self.manager.current = 'view_reports'
-
-    def go_to_set_budget(self, instance=None):
-        self.manager.current = 'set_budget'
-
-    def go_to_manage_categories(self, instance=None):
-        self.manager.current = 'manage_categories'
+    def on_pre_enter(self):
+        """Refresh graphs before entering the screen."""
+        self.generate_expense_graph()
+        self.generate_budget_graph()

@@ -1,34 +1,10 @@
-from kivymd.uix.screen import MDScreen
-from kivymd.uix.button import MDRaisedButton
-import logging
-from models import get_categories, add_category, delete_category
+# manage_categories.py
+from screens.base_screen import BaseScreen
 
-class ManageCategoriesScreen(MDScreen):
-    def on_enter(self):
-        self.load_categories()
-
-    def load_categories(self):
-        logging.info("Loading categories in ManageCategoriesScreen")
-        categories = get_categories()
-
-        self.ids.categories_list.clear_widgets()
-        for category in categories:
-            category_button = MDRaisedButton(text=category, on_press=lambda x: self.delete_category(category))
-            self.ids.categories_list.add_widget(category_button)
-
+class ManageCategoriesScreen(BaseScreen):
     def add_category(self):
-        new_category = self.ids.category_input.text
-        if new_category:
-            add_category(new_category)
-            self.ids.category_input.text = ""  # Clear input
-            self.load_categories()  # Reload categories
-        else:
-            logging.warning("Category name cannot be empty")
-
-    def delete_category(self, category_name):
-        delete_category(category_name)
-        self.load_categories()  # Reload categories after deletion
+        category_name = self.ids.category_input.text
+        self.save_data('category', {'name': category_name})
 
     def go_back_to_main(self):
-        logging.info("Navigating back to MainScreen")
-        self.manager.current = 'main'
+        self.go_to_screen('main')
