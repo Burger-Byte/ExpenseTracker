@@ -5,11 +5,20 @@
         padding: dp(10)
         spacing: dp(10)
 
-        # Graph Layout, reserve space for graphs only
+        # Title for the main screen
+        MDLabel:
+            text: "Expense Overview"
+            font_style: "H4"
+            halign: "center"
+            size_hint_y: None
+            height: dp(40)
+
+        # Graph Layout for the graphs
         BoxLayout:
             id: graph_layout
-            orientation: 'vertical'
-            size_hint_y: 0.6  # 60% for graphs
+            orientation: 'horizontal'
+            size_hint_y: 0.8  # 80% for graphs
+            spacing: dp(10)
+            padding: dp(10)
 
-        # Buttons will be added dynamically in Python, so no buttons here
 

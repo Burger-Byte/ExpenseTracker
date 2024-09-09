@@ -1,28 +1,13 @@
-from kivymd.uix.screen import MDScreen
-import logging
-from models import set_budget
+# budget.py
+from screens.base_screen import BaseScreen
 
-class SetBudgetScreen(MDScreen):
+class SetBudgetScreen(BaseScreen):
     def save_budget(self):
-        category = self.ids.category_input.text
-        budget = self.ids.budget_input.text
-
-        # Ensure both category and budget are provided
-        if category and budget:
-            try:
-                budget_amount = float(budget)  # Convert budget to float
-                set_budget(category, budget_amount)  # Save the budget to the database
-                logging.info(f"Budget set: {category} with amount {budget_amount}")
-                
-                # Clear the input fields
-                self.ids.category_input.text = ""
-                self.ids.budget_input.text = ""
-
-            except ValueError:
-                logging.error("Invalid budget amount. Please enter a valid number.")
-        else:
-            logging.error("Both category and budget amount are required.")
+        data = {
+            'category': self.ids.category_input.text,
+            'budget': self.ids.budget_input.text
+        }
+        self.save_data('budget', data)
 
     def go_back_to_main(self):
-        logging.info("Navigating back to MainScreen")
-        self.manager.current = 'main'
+        self.go_to_screen('main')

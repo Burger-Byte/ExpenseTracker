@@ -1,5 +1,7 @@
-kivy
-sqlite3
-kivymd
-python
-matplotlib
+pip3 install kivy
+pip3 install kivy_garden.matplotlib
+pip3 install sqlite3
+pip3 install kivymd
+pip3 install python
+pip3 install matplotlib
+python -m pip install setuptools
